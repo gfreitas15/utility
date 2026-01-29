@@ -117,7 +117,7 @@ class AplicacaoPrincipal(QMainWindow):
             "• Arraste e solte arquivos diretamente na interface para facilitar o uso\n"
             "• O tema pode ser alternado entre claro e escuro usando o botão no canto superior\n\n"
             "🆘 SUPORTE:\n"
-            "• Versão: 1.2025.09.29\n"
+            "• Versão: 1.2026.01.29\n"
             "• Desenvolvido por: GABRIEL\n"
             "• Para problemas, verifique se todas as dependências estão instaladas"
         )
