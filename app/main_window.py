@@ -18,7 +18,7 @@ from PyQt5.QtWidgets import (
 
 from pdf.compressor import CompressorPDFWidget
 from pdf.conversor import ConversorPDFWidget
-from pdf.separador import SeparadorPDFWidget
+from pdf.separador_container import SeparadorContainerWidget
 from planilhas.container import ComparadorPlanilhasContainerWidget
 
 
@@ -65,9 +65,9 @@ class AplicacaoPrincipal(QMainWindow):
         self.conversor_widget = ConversorPDFWidget()
         self.tab_widget.addTab(self.conversor_widget, "📄 Conversor de PDF")
 
-        # Aba do Separador de PDF (com autenticação)
-        self.separador_widget = SeparadorPDFWidget()
-        self.tab_widget.addTab(self.separador_widget, "🔐 Separador de PDF")
+        # Aba do separador (sub-abas: separador | separador 2)
+        self.separador_widget = SeparadorContainerWidget()
+        self.tab_widget.addTab(self.separador_widget, "🗂️ Separador")
 
         # Aba do Compressor de PDF
         self.compressor_widget = CompressorPDFWidget()
@@ -100,11 +100,9 @@ class AplicacaoPrincipal(QMainWindow):
             "• Junção de múltiplos PDFs em um único documento\n"
             "• Conversões especiais: Excel→PDF, Word→PDF, PDF→Word, PDF→Imagem\n"
             "• Log de atividades em tempo real\n\n"
-            "🔐 SEPARADOR DE PDF:\n"
-            "• Separação de PDFs grandes por marcadores (bookmarks)\n"
-            "• Geração automática de Excel com links clicáveis\n"
-            "• Compressão opcional dos PDFs gerados\n"
-            "• Acesso restrito por senha\n\n"
+            "SEPARADOR:\n"
+            "• Separador (editor): reordenar/remover/inserir páginas com preview\n"
+            "• Separador 2 (antigo): separar PDFs por marcadores (bookmarks) com senha\n\n"
             "🗜️ COMPRESSOR DE PDF:\n"
             "• Compressão de PDFs com imagens escaneadas\n"
             "• Redução significativa do tamanho do arquivo\n"
