@@ -146,4 +146,4 @@ Desenvolvido por **GABRIEL**
 
 ## 📝 Versão
 
-Versão 1.2024.12.19
+Versão 1.2026.01.29
