@@ -1,0 +1,17 @@
+# Dependências para o Comparador de Planilhas
+pandas>=1.3.0
+rapidfuzz>=2.0.0
+PyQt5>=5.15.0
+
+# Dependências para o Conversor de PDF
+Pillow>=8.0.0
+reportlab>=3.6.0
+PyPDF2>=3.0.0
+
+# Dependências para Conversões Especiais
+openpyxl>=3.0.0
+python-docx>=0.8.11
+pdf2image>=2.1.0
+
+# Dependências para Separador de PDF
+xlsxwriter>=3.0.0
