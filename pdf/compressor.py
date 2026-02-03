@@ -469,29 +469,23 @@ class CompressorPDFWorker(QThread):
             temp_dir = tempfile.mkdtemp()
 
             try:
-                # Converter cada página em imagem
+                from pdf2image import convert_from_path
+
+                # Converter PDF em lotes de páginas (muito mais rápido que uma chamada por página)
                 imagens_comprimidas = []
+                CHUNK = 50
+                page_idx = 0
 
-                for i, page in enumerate(reader.pages):
-                    self.progress.emit(int((i / total_paginas) * 50))
+                for start in range(1, total_paginas + 1, CHUNK):
+                    end = min(start + CHUNK - 1, total_paginas)
+                    self.progress.emit(int(50 * (start - 1) / total_paginas))
 
-                    # Converter página em imagem
                     try:
-                        from pdf2image import convert_from_path
-
-                        # Preparar parâmetros para convert_from_path
-                        kwargs = {"dpi": self.dpi, "first_page": i + 1, "last_page": i + 1}
-
-                        # Se o caminho do Poppler foi especificado, adicionar ao kwargs
+                        kwargs = {"dpi": self.dpi, "first_page": start, "last_page": end}
                         if self.poppler_path:
                             kwargs["poppler_path"] = self.poppler_path
-
-                        imagens = convert_from_path(self.pdf_path, **kwargs)
-                        if not imagens:
-                            continue
-                        imagem = imagens[0]
+                        imagens_lote = convert_from_path(self.pdf_path, **kwargs)
                     except Exception as e:
-                        # Verificar se é erro de poppler
                         erro_msg = str(e).lower()
                         if (
                             "poppler" in erro_msg
@@ -510,27 +504,22 @@ class CompressorPDFWorker(QThread):
                             )
                             self.error.emit(mensagem_erro)
                         else:
-                            self.error.emit(f"Erro ao converter página {i+1}: {str(e)}")
+                            self.error.emit(f"Erro ao converter páginas {start}-{end}: {str(e)}")
                         return
 
-                    # Comprimir imagem
-                    if self.formato == "JPEG (melhor compressão)":
-                        # Converter para RGB se necessário
-                        if imagem.mode != "RGB":
-                            imagem = imagem.convert("RGB")
-
-                        # Salvar temporariamente
-                        temp_path = os.path.join(temp_dir, f"page_{i}.jpg")
-                        imagem.save(temp_path, "JPEG", quality=self.qualidade, optimize=True)
-                    else:  # PNG
-                        # Salvar temporariamente
-                        temp_path = os.path.join(temp_dir, f"page_{i}.png")
-                        imagem.save(temp_path, "PNG", optimize=True)
-
-                    # Fechar a imagem explicitamente para liberar o arquivo
-                    imagem.close()
-                    del imagem
-                    imagens_comprimidas.append(temp_path)
+                    for imagem in imagens_lote:
+                        if self.formato == "JPEG (melhor compressão)":
+                            if imagem.mode != "RGB":
+                                imagem = imagem.convert("RGB")
+                            temp_path = os.path.join(temp_dir, f"page_{page_idx}.jpg")
+                            imagem.save(temp_path, "JPEG", quality=self.qualidade, optimize=True)
+                        else:
+                            temp_path = os.path.join(temp_dir, f"page_{page_idx}.png")
+                            imagem.save(temp_path, "PNG", optimize=True)
+                        imagem.close()
+                        del imagem
+                        imagens_comprimidas.append(temp_path)
+                        page_idx += 1
 
                 # Criar novo PDF com imagens comprimidas
                 self.progress.emit(60)
